@@ -16,9 +16,22 @@ services:
          - RCON_PORT=25575
          - TZ=UTC
          - ADMIN_PASSWORD="adminPasswordHere"
+         - UPDATE_ON_BOOT=true
          - COMMUNITY=false  # Enable this if you want your server to show up in the community servers tab, USE WITH SERVER_PASSWORD!
          # Enable the environment variables below if you have COMMUNITY=true
          # - SERVER_PASSWORD="worldofpals"
          # - SERVER_NAME="World of Pals"
       volumes:
          - ./palworld:/palworld/
+      labels:
+         ofelia.enabled: "true"
+         ofelia.job-exec.datecron.schedule: "@every 4h"
+         ofelia.job-exec.datecron.command: "backup"
+
+   ofelia:
+      image: mcuadros/ofelia:latest
+      depends_on:
+         - palworld
+      command: daemon --docker
+      volumes:
+         - /var/run/docker.sock:/var/run/docker.sock:ro
